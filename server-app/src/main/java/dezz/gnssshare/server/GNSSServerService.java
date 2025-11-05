@@ -56,6 +56,7 @@ public class GNSSServerService extends Service {
     private static final String PREF_IS_SERVICE_ENABLED = "isServiceEnabled";
 
     private static boolean running = false;
+    private static Callback runningCallback = null;
 
     private String serverStartError = null;
 
@@ -114,6 +115,10 @@ public class GNSSServerService extends Service {
         startForeground(NOTIFICATION_ID, createNotification());
 
         running = true;
+
+        if (runningCallback != null) {
+            runningCallback.onStatusChanged(running);
+        }
     }
 
     @Override
@@ -127,6 +132,10 @@ public class GNSSServerService extends Service {
     @Override
     public void onDestroy() {
         running = false;
+
+        if (runningCallback != null) {
+            runningCallback.onStatusChanged(running);
+        }
 
         stopServer();
         stopLocationUpdates();
@@ -358,6 +367,10 @@ public class GNSSServerService extends Service {
         return running;
     }
 
+    public static void registerCallback(Callback callback) {
+        runningCallback = callback;
+    }
+
     // Public methods for checking service state
     public static boolean isServiceEnabled(Context context) {
         return getPrefs(context).getBoolean(PREF_IS_SERVICE_ENABLED, false);
@@ -561,6 +574,12 @@ public class GNSSServerService extends Service {
                     (byte) (value >>> 8),
                     (byte) value
             };
+        }
+    }
+
+    public abstract static class Callback {
+        public void onStatusChanged(boolean serviceRunning) {
+            throw new RuntimeException("Stub!");
         }
     }
 }

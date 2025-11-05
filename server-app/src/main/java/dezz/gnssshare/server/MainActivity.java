@@ -79,6 +79,13 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private final GNSSServerService.Callback gnssServierServiceCallback = new GNSSServerService.Callback() {
+        @Override
+        public void onStatusChanged(boolean serviceRunning) {
+            updateUIState(serviceRunning);
+        }
+    };
+
     private String appVersion = "<unknown>";
 
     @Override
@@ -94,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
         if (GNSSServerService.isServiceEnabled(this) && !GNSSServerService.isServiceRunning()) {
             startGNSSService();
         }
+
+        GNSSServerService.registerCallback(gnssServierServiceCallback);
     }
 
     @Override
@@ -111,6 +120,13 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
 
         mainHandler.removeCallbacks(this.fillInterfaceListRunnable);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        updateUIState(GNSSServerService.isServiceRunning());
     }
 
     private void initializeViews() {
@@ -152,9 +168,7 @@ public class MainActivity extends AppCompatActivity {
                     if (!nameWasShown) {
                         String displayName = switch (name) {
                             case "wlan0" -> String.format("%s (%s)", name, getString(R.string.interface_wifi));
-                            case "wlan1" -> String.format("%s (%s)", name, getString(R.string.interface_hotspot));
-                            case "swlan0" -> String.format("%s (%s)", name, getString(R.string.interface_hotspot));
-                            case "ap0" -> String.format("%s (%s)", name, getString(R.string.interface_hotspot));
+                            case "wlan1", "swlan0", "ap0" -> String.format("%s (%s)", name, getString(R.string.interface_hotspot));
                             default -> name;
                         };
                         sb.append("  • ");
