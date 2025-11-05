@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface intf : interfaces) {
                 String name = intf.getDisplayName();
-                if (!name.startsWith("wlan")) {
+                if (!name.startsWith("wlan") && !name.startsWith("swlan") && !name.startsWith("ap")) {
                     continue;
                 }
 
@@ -151,10 +151,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (!nameWasShown) {
                         String displayName = switch (name) {
-                            case "wlan0" ->
-                                    String.format("%s (%s)", name, getString(R.string.interface_wifi));
-                            case "wlan1" ->
-                                    String.format("%s (%s)", name, getString(R.string.interface_hotspot));
+                            case "wlan0" -> String.format("%s (%s)", name, getString(R.string.interface_wifi));
+                            case "wlan1" -> String.format("%s (%s)", name, getString(R.string.interface_hotspot));
+                            case "swlan0" -> String.format("%s (%s)", name, getString(R.string.interface_hotspot));
+                            case "ap0" -> String.format("%s (%s)", name, getString(R.string.interface_hotspot));
                             default -> name;
                         };
                         sb.append("  • ");
