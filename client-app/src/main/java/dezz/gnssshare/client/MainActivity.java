@@ -145,6 +145,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        updateServiceStatus(GNSSClientService.isServiceRunning());
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
 
