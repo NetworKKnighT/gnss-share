@@ -129,6 +129,9 @@ public class GNSSClientService extends Service implements ConnectionManager.Conn
             connectionManager.shutdown();
         }
         executor.shutdown();
+
+        notificationManager.cancel(NOTIFICATION_ID);
+        notificationManager = null;
     }
 
     public IBinder onBind(Intent intent) {
